@@ -1,0 +1,6 @@
+#Sat Mar 31 11:38:13 CST 2012
+eclipse.preferences.version=1
+encoding//src/io/__init__.py=UTF-8
+encoding//src/io/http.py=UTF-8
+encoding//src/oauth/oauth.py=UTF-8
+encoding//src/user/account.py=UTF-8
