@@ -34,10 +34,11 @@ def ls(path, root="kuaipan", list="true",filter_ext="exe,pdf", page=0, page_size
         _is_deleted = _file['is_deleted']
         _id = _file['file_id']
         
-        if _file["type"] == "folder":            
-            folders.append(kfolder(root, path, _name, _id))
-        elif _file["type"] == "file":
-            files.append(kfile(root, path, _name, _id))
+        if not _is_deleted:
+            if _file["type"] == "folder":            
+                folders.append(kfolder(root, path, _name, _id))
+            elif _file["type"] == "file":
+                files.append(kfile(root, path, _name, _id))
     
     return folders, files
     

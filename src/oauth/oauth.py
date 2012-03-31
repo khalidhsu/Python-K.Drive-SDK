@@ -67,10 +67,7 @@ class Oauth:
     def build_base_string(params, url): # Notice here the dict has been quoted twice.
         params_str_dict = [quote(k) + "=" + quote(v) for k, v in params.items()]
         params_str_dict.sort()
-##        
-#        index = url.index("//")
-#        url = url[:index + 2] + quote(url[index + 2:])
-        
+                
         return ("%s&%s&%s" % (http_method,
                              quote(url),
                              quote("&".join(params_str_dict))))
