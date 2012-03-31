@@ -40,14 +40,16 @@ def send(url, params={}):
     )
     
     _params.update(params)
+    
+    index = url.index("//")
+    url = url[:index + 2] + quote(url[index+2:])
+    
     _base_string = Oauth.build_base_string(_params, url)
     print _base_string
     _params["oauth_signature"] = Oauth.generate_oauth_signature(_base_string,
                                                                 get_consumer_secret(), 
                                                                 get_oauth_token_secret())
-#    print _params["oauth_signature"]
-    index = url.index("//")
-    url = url[:index + 2] + quote(url[index+2:])
+#    print _params["oauth_signature"]    
 
     _url = Oauth.generate_url(url, _params)
     print _url

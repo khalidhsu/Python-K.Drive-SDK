@@ -20,10 +20,11 @@ class kfolder:
 def get_directory_url(version="1", root="kuaipan", path=""):
     return "http://openapi.kuaipan.cn/%s/metadata/%s/%s" % (version, root, path)
     
-def ls(path, root="kuaipan", list="true", page=0, page_size=20, sort_by="date"):
+def ls(path, root="kuaipan", list="true",filter_ext="exe,pdf", page=0, page_size=20, sort_by="date"):
     params = dict(#list=list,
                    page=str(page),
                    page_size=str(page_size),
+#                   filter_ext=filter_ext,
 #                   sort_by=sort_by
                    )
     ls_data = send(get_directory_url(root=root, path=path), params)
@@ -41,7 +42,7 @@ def ls(path, root="kuaipan", list="true", page=0, page_size=20, sort_by="date"):
     return folders, files
     
 if __name__ == "__main__":
-    fos, fis = ls("books/java/Application Server")
+    fos, fis = ls("books/java/网络编程")
 
 #    fos, fis = ls(folders[0].fullpath())
     for f in fos: print f

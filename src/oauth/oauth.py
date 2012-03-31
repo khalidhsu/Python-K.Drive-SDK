@@ -3,13 +3,16 @@
 # Get temp token for OAuth use.
 
 #TODO: Using pycurl to boost
-from urllib import urlencode, quote_plus
+from urllib import urlencode, quote as _quote
 import hmac, hashlib, base64, time, urllib2
 
 try:
     import simplejson as json
 except ImportError: # For Python >= 2.6
     import json
+    
+def quote(_i):
+    return _quote(_i, "")
 
 request_token_url = "https://openapi.kuaipan.cn/open/requestToken"
 access_token_url = "https://openapi.kuaipan.cn/open/accessToken"
@@ -61,12 +64,16 @@ class Oauth:
         token_dict = Oauth.process(_url, Oauth.get_access_token)
     
     @staticmethod
-    def build_base_string(params, url): #        
-        params_str_dict = [k + "=" + v for k, v in params.items()]
+    def build_base_string(params, url): # Notice here the dict has been quoted twice.
+        params_str_dict = [quote(k) + "=" + quote(v) for k, v in params.items()]
         params_str_dict.sort()
+##        
+#        index = url.index("//")
+#        url = url[:index + 2] + quote(url[index + 2:])
+        
         return ("%s&%s&%s" % (http_method,
-                             quote_plus(url),
-                             quote_plus("&".join(params_str_dict)))).replace("+", "%2520")
+                             quote(url),
+                             quote("&".join(params_str_dict))))
     
     @staticmethod
     def generate_oauth_signature(base_string, _consumer_secret, _oauth_token_secret=""):
