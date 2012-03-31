@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 # Daoyu 2012/3/30
-# Get temp token for OAuth use.
+# Send the request to K drive.
 
 from src.oauth import Oauth
 import urllib2
@@ -30,7 +30,7 @@ def send(url, params={}):
     _time = str(int(time.time()))
     _params = dict(
         oauth_consumer_key=get_consumer_key(),
-        oauth_nonce="x" + _time,
+        oauth_nonce="fqoiwhf" + _time,
         oauth_signature_method="HMAC-SHA1",
         oauth_timestamp=_time,
         oauth_version="1.0",
