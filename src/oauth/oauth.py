@@ -61,12 +61,12 @@ class Oauth:
         token_dict = Oauth.process(_url, Oauth.get_access_token)
     
     @staticmethod
-    def build_base_string(params, url): #
+    def build_base_string(params, url): #        
         params_str_dict = [k + "=" + v for k, v in params.items()]
         params_str_dict.sort()
-        return "%s&%s&%s" % (http_method,
+        return ("%s&%s&%s" % (http_method,
                              quote_plus(url),
-                             quote_plus("&".join(params_str_dict)))
+                             quote_plus("&".join(params_str_dict)))).replace("+", "%2520")
     
     @staticmethod
     def generate_oauth_signature(base_string, _consumer_secret, _oauth_token_secret=""):

@@ -3,6 +3,7 @@
 # Send the request to K drive.
 
 from src.oauth import Oauth
+from urllib import quote
 import urllib2
 try:
     import simplejson as json
@@ -27,6 +28,7 @@ def get_consumer_secret():
 import time
 
 def send(url, params={}):
+    url = url.encode("UTF-8")
     _time = str(int(time.time()))
     _params = dict(
         oauth_consumer_key=get_consumer_key(),
@@ -39,10 +41,16 @@ def send(url, params={}):
     
     _params.update(params)
     _base_string = Oauth.build_base_string(_params, url)
+    print _base_string
     _params["oauth_signature"] = Oauth.generate_oauth_signature(_base_string,
                                                                 get_consumer_secret(), 
                                                                 get_oauth_token_secret())
+#    print _params["oauth_signature"]
+    index = url.index("//")
+    url = url[:index + 2] + quote(url[index+2:])
+
     _url = Oauth.generate_url(url, _params)
+    print _url
 
     h = urllib2.Request(_url)
     res = urllib2.urlopen(h)
