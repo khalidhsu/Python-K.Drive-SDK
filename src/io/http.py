@@ -29,10 +29,11 @@ import time
 
 def send(url, params={}):
     url = url.encode("UTF-8")
-    _time = str(int(time.time()))
+    _nonce = time.time()
+    _time = str(int(_nonce))
     _params = dict(
         oauth_consumer_key=get_consumer_key(),
-        oauth_nonce="fqoiwhf" + _time,
+        oauth_nonce="no-" + str(_nonce),
         oauth_signature_method="HMAC-SHA1",
         oauth_timestamp=_time,
         oauth_version="1.0",
@@ -45,14 +46,14 @@ def send(url, params={}):
     url = url[:index + 2] + quote(url[index+2:])
     
     _base_string = Oauth.build_base_string(_params, url)
-    print _base_string
+#    print _base_string
     _params["oauth_signature"] = Oauth.generate_oauth_signature(_base_string,
                                                                 get_consumer_secret(), 
                                                                 get_oauth_token_secret())
 #    print _params["oauth_signature"]    
 
     _url = Oauth.generate_url(url, _params)
-    print _url
+#    print _url
 
     h = urllib2.Request(_url)
     res = urllib2.urlopen(h)
