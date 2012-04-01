@@ -4,6 +4,7 @@
 
 from src.oauth import Oauth
 from urllib import quote
+from urllib2 import URLError, HTTPError
 import urllib2
 try:
     import simplejson as json
@@ -54,10 +55,22 @@ def send(url, params={}):
 
     _url = Oauth.generate_url(url, _params)
 #    print _url
-
-    h = urllib2.Request(_url)
-    res = urllib2.urlopen(h)
-    json_response = json.loads(res.read()) #TODO: deal with every http error code
-    res.close()
+    try:
+        h = urllib2.Request(_url)
+        res = urllib2.urlopen(h)
+        json_response = json.loads(res.read()) #TODO: deal with every http error code
+        res.close()
+        
+        return json_response
+    except HTTPError, e:
+        print 'The server couldn\'t fulfill the request.'
+        print 'Error code: ', e.code
+    except URLError, e:
+        if hasattr(e, 'reason'):
+            print 'We failed to reach a server.'
+            print 'Reason: ', e.reason
+        elif hasattr(e, 'code'):
+            print 'The server couldn\'t fulfill the request.'
+            print 'Error code: ', e.code
     
-    return json_response
+    return {}

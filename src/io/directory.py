@@ -2,9 +2,15 @@
 # Daoyu 2012/3/30
 
 from http import send
-from file import kfile
+from file import kfile, rm_url, mv_url, cp_url
 
-class kfolder:
+def ls_url(version="1", root="kuaipan", path=""):
+    return "http://openapi.kuaipan.cn/%s/metadata/%s/%s" % (version, root, path)
+
+def mkdir_url(version="1"):
+    return "http://openapi.kuaipan.cn/%s/fileops/create_folder" % version
+
+class kfolder (kfile):
     def __init__(self, path="", name="", _id="", root="kuaipan", page=0, page_size=20, sort_by="date", filter_ext=""):
         self.root = root
         self.path = path
@@ -15,39 +21,23 @@ class kfolder:
         self.sort_by = sort_by
         self.filter_ext = filter_ext
     
-    def fullpath(self):
-        return "%s/%s" %(self.path, self.name)
-    
     def __str__(self):
         return "+ %s/%s" % (self.path, self.name)
     
     def rmdir(self, to_recycle=True):
-        if not self.path:
-            raise Exception("Remove root is not allowed/too dangerous, please goto kuaipan.cn and do it there.")
-        params = dict(
-                      root=self.root,
-                      path=self.path,
-                      )
-        if not to_recycle:
-            params["to_recycle"] = "False"
-        del_data = send(rm_url(), params)
-        msg = del_data["msg"]
-        if "ok" != msg:
-            raise Exception(msg)
+        return self.rm(to_recycle)        
     
-    def create(self, _path):
+    def mkdir(self, _path):
         new_path = self.check_path(_path)        
         params = dict(
                       root=self.root,
                       path=new_path
                       )
-        new_folder_data = send(mkdir_url(), params)
-        msg = new_folder_data["msg"]
-        if "ok" != msg:
-            raise Exception(msg)
-        
-        _id = new_folder_data["file_id"]        
-        return kfolder(new_path, _path, _id, self.root)
+        mkdir_data = send(mkdir_url(), params)
+        if mkdir_data:
+            _id = mkdir_data["file_id"]        
+            return kfolder(new_path, _path, _id, self.root)
+        return None    
     
     def ls(self):
         params = dict(
@@ -58,17 +48,18 @@ class kfolder:
                        )
         ls_data = send(ls_url(root=self.root, path=self.path), params)
         files, folders = [], []
-        for _file in ls_data["files"]:
-            _name = _file['name']
-            _is_deleted = _file['is_deleted']
-            _id = _file['file_id']
-            
-            if not _is_deleted:
-                if _file["type"] == "folder":
-                    _folder = kfolder(self.path, _name, _id, self.root, )
-                    folders.append(_folder)
-                elif _file["type"] == "file":
-                    files.append(kfile(self.root, self.path, _name, _id))
+        if ls_data:
+            for _file in ls_data["files"]:
+                _name = _file['name']
+                _is_deleted = _file['is_deleted']
+                _id = _file['file_id']
+                
+                if not _is_deleted:
+                    if _file["type"] == "folder":
+                        _folder = kfolder(self.path, _name, _id, self.root, )
+                        folders.append(_folder)
+                    elif _file["type"] == "file":
+                        files.append(kfile(self.root, self.path, _name, _id))
         
         return folders, files
     
@@ -83,22 +74,19 @@ class kfolder:
          
         return new_path
     
-def ls_url(version="1", root="kuaipan", path=""):
-    return "http://openapi.kuaipan.cn/%s/metadata/%s/%s" % (version, root, path)
-
-def mkdir_url(version="1"):
-    return "http://openapi.kuaipan.cn/%s/fileops/create_folder" % version
-
-def rm_url(version="1"):
-    return "http://openapi.kuaipan.cn/%s/fileops/delete " % version
-
 if __name__ == "__main__":
-#    home = kfolder("hahaha")
-#    home.rmdir()
-
-    home = kfolder()
-#    home.create("hahaha")
+#    test = kfolder("abc")
+#    test.rmdir()
+    home = kfolder("")
+    
+    test = kfolder("b")
+    test.rmdir()
+#    b = kfolder("b")
+#    b.cp("d")
+#    test = kfolder("a")
+#    test.mv("b/a")
     fos, fis = home.ls()#("books/java/网络编程")
 
     for f in fos: print f
     for f in fis: print f
+    
